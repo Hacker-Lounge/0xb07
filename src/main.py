@@ -21,11 +21,11 @@ discord_bot = commands.Bot(command_prefix='!')
 bot_commands = { 
     "ctftime" : ctftime,
     "crypto"  : crypto,
+    "brute_rot": crypto.brute_rot,
 }
 
 @discord_bot.event
 async def on_ready():
-    print("[*] Token: " + discord_bot.TOKEN)
     print("[*] Started bot")
     print("[*] Guilds:", ' '.join([guild.name for guild in discord_bot.guilds]))
 
@@ -37,7 +37,7 @@ async def echo(ctx, arg):
 async def ctf(ctx, *args):
     if args[0] in bot_commands.keys():
         try:
-            results = bot_commands[args[0]][args[1:]]
+            results = bot_commands[args[0]](args[1:])
             for result in results:
                 await ctx.send(result)
         except Exception as e:
