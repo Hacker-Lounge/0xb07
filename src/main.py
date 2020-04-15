@@ -71,5 +71,7 @@ async def ctf(ctx, *args):
 
 if __name__ == "__main__":
     load_dotenv("..\\.env" if os.name == "nt" else "../.env")
+    
     TOKEN = os.getenv('TOKEN')
+    print(TOKEN)
     discord_bot.run(TOKEN)
