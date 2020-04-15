@@ -15,4 +15,7 @@ def join(separator=' '):
 @join(' ')
 def func(args):
     print(args)
+<<<<<<< HEAD
 
+=======
+>>>>>>> e07944bec96fd055c6437044309619e0acd82222
