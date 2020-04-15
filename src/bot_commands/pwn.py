@@ -3,7 +3,9 @@
 import string
 _default_alphabet = string.ascii_uppercase.encode()
 _default_size = 8
+import utils
 
+utils.decorators.join
 
 
 def _de_bruijn(alphabet = None, n = None):
