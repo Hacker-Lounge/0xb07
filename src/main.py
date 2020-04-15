@@ -19,8 +19,12 @@ def invalid_command_msg():
 discord_bot = commands.Bot(command_prefix='!')
 
 bot_commands = { 
-    "ctftime" : ctftime,
-    "crypto"  : crypto,
+    # "ctftime" : ctftime,
+    # "crypto"  : crypto,
+    "a2h"   : crypto.ascii_to_hex,
+    "h2a"   : crypto.hex_to_ascii,
+
+    "rot13"   : crypto.rot13,
     "brute_rot": crypto.brute_rot,
 }
 
@@ -37,9 +41,13 @@ async def echo(ctx, arg):
 async def ctf(ctx, *args):
     if args[0] in bot_commands.keys():
         try:
-            results = bot_commands[args[0]](args[1:])
-            for result in results:
-                await ctx.send(result)
+            xyz = bot_commands[args[0]](args[1:])
+            # TODO: check if xyz exceeds limit
+            if type(xyz) == str:
+                await ctx.send(xyz)
+            else:
+                for result in xyz:
+                    await ctx.send(result)
         except Exception as e:
             await ctx.send(e)
     else:

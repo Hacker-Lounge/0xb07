@@ -1,18 +1,22 @@
 import binascii
 import codecs
 
-def rot13(msg):
-    return codecs.encode(':'.join(msg.split(':')[1:]), 'rot_13')
+def rot13(args):
+    given_string  =" ".join([x for x in args])
+    return codecs.encode(given_string,'rot_13')
 
 
-def h2a(msg):
-    return binascii.unhexlify(':'.join(msg.split(':')[1:])).decode()
+def hex_to_ascii(args):
+    given_string  =" ".join([x for x in args])
+    return "```" + binascii.unhexlify(given_string) + "```"
 
-def a2h(msg):
-    return [''.join([str(hex(i)) for i in binascii.hexlify((':'.join(msg.split(':')[1:])).encode())])]
+def ascii_to_hex(args):
+    given_string  =" ".join([x for x in args])
+    return "```" + str(binascii.hexlify(given_string.encode())) + "```"
 
 
 def brute_rot(args):
+    # TODO: check for words in dictionary and rank results
     enc_string  =" ".join([x for x in args])
     dec_strings = []
     for key in range(1,26):
@@ -36,6 +40,7 @@ def brute_rot(args):
             else:
                 dec_string+=c
         dec_strings.append((key,dec_string))
+    # Super Ugly
     formatted_table = \
         "```\n"+\
             "Key | decrypted_string\n" + \
