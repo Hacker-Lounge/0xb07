@@ -42,7 +42,7 @@ def brute_rot(*args):
     
     msg_table = sorted(msg_table,key = lambda x: x[0],reverse = True)
 
-    formatted_msg_table = "rank | key | decrypted_string\n"
+    formatted_msg_table = "rank ┃ key ┃ decrypted_string\n"+"━━━━━╋━━━━━╋━━━━━━━━━━━━━━━━━"+"\n"
     for rank,key,dec_string in msg_table:
-        formatted_msg_table += f"{rank:>4} | {key:>3} | {dec_string}\n"
+        formatted_msg_table += f"{rank:>4} ┃ {key:>3} ┃ {dec_string}\n"
     return ["```" + formatted_msg_table + "```"]
