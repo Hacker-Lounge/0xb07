@@ -41,6 +41,7 @@ async def echo(ctx, arg):
 async def ctf(ctx, *args):
     if args[0] in bot_commands.keys():
         try:
+            print(*args[1:])
             xyz = bot_commands[args[0]](*args[1:])
             # TODO: check if xyz exceeds limit
             if type(xyz) == str:
