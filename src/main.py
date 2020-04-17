@@ -1,77 +1,56 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Basic Imports
 import os
 
 # External Imports
 import discord
-from discord.ext import commands
 from dotenv import load_dotenv
-
+import premade_messages
 # Our Plugins
 from bot_commands import ctftime, crypto
 
+client = discord.Client()
 
-def invalid_command_msg():
-    return "Invalid Command!\ncommands: "+" ".join([x for x in bot_commands.keys()])
+exported_functions = []
 
-discord_bot = commands.Bot(command_prefix='!')
 
-bot_commands = { 
-    # "ctftime" : ctftime,
-    # "crypto"  : crypto,
-    "a2h"   : crypto.ascii_to_hex,
-    "h2a"   : crypto.hex_to_ascii,
+@client.event
+async def onMessage(message):
+    if message.author == client.user:
+        return
 
-    "rot13"   : crypto.rot13,
-    "brute_rot": crypto.brute_rot,
-}
+    results = []
 
-@discord_bot.event
-async def on_ready():
-    print("[*] Started bot")
-    print("[*] Guilds:", ' '.join([guild.name for guild in discord_bot.guilds]))
+    packages = [func.getPackage() for func in exported_functions]
+    commands = [func.getCommand() for func in exported_functions]
 
-@discord_bot.command()
-async def echo(ctx, arg):
-    await ctx.send(arg)
+    if message.content.startswith('!'):
+        message_package = message.content[1:].split(' ')[0]
+        message_command = message.content[1:].split(' ')[1]
 
-@discord_bot.command()
-async def ctf(ctx, *args):
-    if args[0] in bot_commands.keys():
-        try:
-            print(*args[1:])
-            xyz = bot_commands[args[0]](*args[1:])
-            # TODO: check if xyz exceeds limit
-            if type(xyz) == str:
-                await ctx.send(xyz)
-            else:
-                for result in xyz:
-                    await ctx.send(result)
-        except Exception as e:
-            await ctx.send(e)
-    else:
-        await ctx.send(invalid_command_msg())
+        if message_package not in packages or message_command not in commands:
+            results.append(premade_messages.error_message)
 
-# @discord_bot.event
-# async def on_message(message):
-#     if message.author == discord_bot.user: return
-#     results = []
-#     if message.content.startswith("!CTF."):
-#         parts = message.content.split('.')
-        
-#         try:
-#             results =commands[parts[1]][parts[2][:parts[2].find(':')] if ':' in parts[2] else parts[2]](message.content)
-#         except KeyError:
-#             results.append("Unknown command")
-            
-#     for result in results:
-#         await message.channel.send(result)
+        else:
+            for exported_function in exported_functions:
+                if (exported_function.getPackage(),exported_function.getCommand()) == (message_package, message_command):
+                    try:
+                        results = exported_function.call(message.content)
+                    except Exception:
+                        results.append(exported_function.getHelpMesssage)
+                    
+
+    for result in results:
+        if len(result) <= 2000:
+            await message.channel.send("```"+result+"```")
+        else:
+            for partition in [result[i:i+2000] for i in range(0, len(result), 2000)]:
+                await message.channel.send("```"+partition+"```")
+                
 
 if __name__ == "__main__":
     load_dotenv("..\\.env" if os.name == "nt" else "../.env")
     
     TOKEN = os.getenv('TOKEN')
-    print(TOKEN)
-    discord_bot.run(TOKEN)
+    client.run(TOKEN)
